@@ -1,6 +1,8 @@
 package main;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,10 +28,16 @@ public class Game {
 		boolean continueGame = true;
 		
 		while (continueGame) {
-			this.state = new GameState(this.wordlist);
+			this.state = new GameState(wordlist);
+			
 			this.mainGameLoop();
 			
-			System.out.println("Continue (y/n): ");
+			ArrayList<String> wlist = new ArrayList<String>(Arrays.asList(this.wordlist));
+			int idx = wlist.indexOf(this.state.getSelectedWord());
+			wlist.remove(idx);
+			this.wordlist = wlist.toArray(new String[wlist.size()]);
+			
+			System.out.println("Select 'N' or 'n' to exit or any other key to continue, followed by ENTER");
 			char choice = scanner.next().charAt(0);
 			
 			if (choice == 'n' || choice == 'N') {
@@ -44,7 +52,7 @@ public class Game {
 		
 		boolean isGuessed = false;
 		
-		while (!isGuessed && this.state.getMisses().size() < this.maxAttempts) {
+		while (!isGuessed && this.state.getMisses().size() <= this.maxAttempts) {
 			
 			System.out.print("Mysterious word: ");
 			this.printSelectedWord(this.state.getSelectedWord(), this.state.getGuesses());
@@ -67,11 +75,12 @@ public class Game {
 		}
 		
 		if (!isGuessed) {
-			this.score -= 10;
 			System.out.println("Too bad, please try again");
 		}
 		
 		System.out.println("Score: " + this.score);
+		System.out.println();
+		System.out.println("-------------------------------");
 	}
 	
 	public void onLetterSelected(char letter) {
@@ -93,6 +102,7 @@ public class Game {
 	}
 	
 	private void printGameUI() {
+		System.out.println();
 		System.out.println("Attempts left: " + (this.maxAttempts - this.state.getMisses().size()));
 		
 		System.out.print("Guesses: ");
@@ -105,6 +115,8 @@ public class Game {
 		for (Character miss : this.state.getMisses()) {
 			System.out.print(miss + ", ");
 		}
+		System.out.println();
+		System.out.println("=========================================================================");
 		System.out.println();
 	}
 	
