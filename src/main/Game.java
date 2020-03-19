@@ -5,9 +5,10 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class Game {
+	private static Scanner scanner = new Scanner(System.in);
+	
 	private String[] wordlist;
 	private int maxAttempts;
 	private int score;
@@ -16,24 +17,40 @@ public class Game {
 	
 	public Game(String[] wordlist, int maxAttempts) {
 		this.maxAttempts = maxAttempts;
-		this.state = new GameState(wordlist);
+		this.wordlist = wordlist;
 		
 		this.score = 0;
 	}
 	
 	public void start() throws IOException {
-		System.out.println("Game started, max attempts " + this.maxAttempts);
-		System.out.println("Please enter a key");
+		boolean continueGame = true;
 		
-		Scanner scanner = new Scanner(System.in);
+		while (continueGame) {
+			this.state = new GameState(this.wordlist);
+			this.mainGameLoop();
+			
+			System.out.println("Continue (y/n): ");
+			char choice = scanner.next().charAt(0);
+			
+			if (choice == 'n' || choice == 'N') {
+				continueGame = false;
+			}
+		}
+		
+		scanner.close();
+	}
+	
+	private void mainGameLoop() throws IOException {
+		
 		boolean isGuessed = false;
 		
 		while (!isGuessed && this.state.getMisses().size() < this.maxAttempts) {
+			
+			System.out.print("Choose a letter and press ENTER (for multiple letters, we will choose the first): ");
 			char c = scanner.next().charAt(0);
-			System.out.println("You selected letter " + c);
 			this.onLetterSelected(c);
 			
-			
+			this.printGameUI();
 			
 			if (this.isWordGuessed(this.state.getSelectedWord(), this.state.getGuesses())) {
 				isGuessed = true;
@@ -43,11 +60,14 @@ public class Game {
 		if (isGuessed) {
 			this.score += 10;
 			System.out.println("Congratulations, you guessed the word!");
-			System.out.println("Score: " + this.score);
 		}
 		
+		if (!isGuessed) {
+			this.score -= 10;
+			System.out.println("Too bad, please try again");
+		}
 		
-		scanner.close();
+		System.out.println("Score: " + this.score);
 	}
 	
 	public void onLetterSelected(char letter) {
@@ -70,7 +90,10 @@ public class Game {
 	
 	private void printGameUI() {
 		System.out.println("Attempts left: " + (this.maxAttempts - this.state.getMisses().size()));
-		System.out.println("Word: " + this.state.getSelectedWord());
+		
+		System.out.print("Word: ");
+		this.printSelectedWord(this.state.getSelectedWord(), this.state.getGuesses());
+		System.out.println();
 		
 		System.out.print("Guesses: ");
 		for (Character guess : this.state.getGuesses()) {
@@ -83,6 +106,16 @@ public class Game {
 			System.out.print(miss + ", ");
 		}
 		System.out.println();
+	}
+	
+	private void printSelectedWord(String word, LinkedList<Character> guesses) {
+		for (char letter: word.toCharArray()) {
+			if (guesses.contains(letter)) {
+				System.out.print(letter);
+			} else {
+				System.out.print("-");
+			}
+		}
 	}
 	
 	private boolean isInSelectedWord(char letter, String word) {
