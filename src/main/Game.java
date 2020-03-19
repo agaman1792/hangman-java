@@ -46,6 +46,10 @@ public class Game {
 		
 		while (!isGuessed && this.state.getMisses().size() < this.maxAttempts) {
 			
+			System.out.print("Mysterious word: ");
+			this.printSelectedWord(this.state.getSelectedWord(), this.state.getGuesses());
+			System.out.println(" length " + this.state.getSelectedWord().length());
+			
 			System.out.print("Choose a letter and press ENTER (for multiple letters, we will choose the first): ");
 			char c = scanner.next().charAt(0);
 			this.onLetterSelected(c);
@@ -90,10 +94,6 @@ public class Game {
 	
 	private void printGameUI() {
 		System.out.println("Attempts left: " + (this.maxAttempts - this.state.getMisses().size()));
-		
-		System.out.print("Word: ");
-		this.printSelectedWord(this.state.getSelectedWord(), this.state.getGuesses());
-		System.out.println();
 		
 		System.out.print("Guesses: ");
 		for (Character guess : this.state.getGuesses()) {
