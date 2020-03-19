@@ -52,7 +52,7 @@ public class Game {
 		
 		boolean isGuessed = false;
 		
-		while (!isGuessed && this.state.getMisses().size() <= this.maxAttempts) {
+		while (!isGuessed && this.state.getMisses().size() < this.maxAttempts) {
 			
 			System.out.print("Mysterious word: ");
 			this.printSelectedWord(this.state.getSelectedWord(), this.state.getGuesses());
